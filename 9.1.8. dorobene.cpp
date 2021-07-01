@@ -85,8 +85,8 @@ void mat_unit(MAT *mat)
 		}
 	}
 }
-//rotaËna matica musi splnaù dve vlatnosti a to matica krat transponovana matica sa musi rovnaù I druha vlastnosù ktora z nej vychadza ûe det matice = +-1
-//takûe matica rotacie musi byù ortogon·lna 
+//rota√®na matica musi splna¬ù dve vlatnosti a to matica krat transponovana matica sa musi rovna¬ù I druha vlastnos¬ù ktora z nej vychadza ≈æe det matice = +-1
+//tak≈æe matica rotacie musi by¬ù ortogon√°lna 
 char mat_test_rotation(MAT *mat)
 {
 	
@@ -124,9 +124,9 @@ char mat_test_rotation(MAT *mat)
 		for(j=0;j<mat->cols;j++)
 		{
 			if(i==j && kon[i][j]!=1 )
-			vysledok =0;
+				vysledok =0;
 			if(i!=j && kon[i][j]!=0)
-			vysledok = 0;
+				vysledok = 0;
 		}
 	}
 	if(vysledok==1)
