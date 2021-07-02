@@ -36,6 +36,51 @@ MAT *mat_create_with_type(unsigned int rows, unsigned int cols)
 	return mat;
 }
 
+MAT *mat_create_by_file(char *filename)
+{
+ 	MAT *mat;
+    unsigned int rows, cols;
+    char typ_suboru[2] = {0};
+
+    int f = open(filename, O_RDONLY | O_BINARY, S_IRUSR);
+
+    if ( f < 0)
+        return NULL;
+    
+    read(f, &typ_suboru[0], sizeof(char));		//najprv zistim ci na zaciatku je M1
+    read(f, &typ_suboru[1], sizeof(char));
+
+    if (typ_suboru[0] != 'M' || typ_suboru[1] != '1')
+       return NULL;
+    
+    read(f, &rows, sizeof(unsigned int));		//rozmery
+    read(f, &cols, sizeof(unsigned int));
+
+    mat = mat_create_with_type(rows, cols);
+
+    read(f, mat->elem, sizeof(float)*rows*cols);
+
+    close(f);
+    return mat;
+}
+
+char mat_save(MAT *mat, char *filename)
+{
+	int f = open(filename, O_CREAT | O_WRONLY | O_BINARY, S_IWUSR);
+
+    if ( f < 0)
+        return NULL;
+    
+    write(f, "M1", sizeof(char)*2);		//ako prve savneme M1
+
+    write(f, &mat->rows, sizeof(unsigned int));		//zapis rozmerov
+    write(f, &mat->cols, sizeof(unsigned int));
+
+    write(f, mat->elem, sizeof(float)*(mat->rows)*(mat->cols));		//zapis pixelov
+
+    close(f);
+}
+
 void mat_random(MAT *mat)
 {
 	int i, j;
@@ -160,6 +205,13 @@ main()
     mat_test_rotation(matica);
 	printf("%i\n",mat_test_rotation(matica));
 	
+	/*
+	char file[] = {0};
 	
+	mat_save(matica,matica.txt);
+	matica = mat_create_by_file(filename);
+	mat_print(matica
+	
+	*/
 
 }
