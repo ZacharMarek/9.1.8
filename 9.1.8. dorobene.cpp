@@ -28,10 +28,7 @@ MAT *mat_create_with_type(unsigned int rows, unsigned int cols)
 	
 	mat->elem=(float *)malloc(sizeof(float)*rows*cols);
 	if (mat->elem==NULL)
-	{
-	
 		return NULL;
-	}
 	
 	return mat;
 }
