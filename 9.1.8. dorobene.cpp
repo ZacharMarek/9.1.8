@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h> 
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #define ELEM(M,r,c) (M->elem[(M->cols)*r+c]) 
 
@@ -78,17 +80,15 @@ char mat_save(MAT *mat, char *filename)
     close(f);
 }
 
+
 void mat_random(MAT *mat)
 {
 	int i, j;
 	
 	for (i=0;i<mat->rows;i++)
-	{
 		for (j=0;j<mat->cols;j++)
-		{
 			ELEM(mat,i,j)=((float)rand()/(int)(RAND_MAX))*-2.0 + 1.0;
-		}
-	}	
+			
 }
 
 void mat_print(MAT *mat)
@@ -98,9 +98,8 @@ void mat_print(MAT *mat)
 	for (i=0;i<mat->rows;i++)
 	{
 		for (j=0;j<mat->cols;j++)
-		{
 			printf("%3.0f",ELEM(mat,i,j));
-		}
+			
 		printf("\n");
 	}
 	printf("\n");
@@ -127,36 +126,28 @@ void mat_unit(MAT *mat)
 		}
 	}
 }
-//rotaèna matica musi splna dve vlatnosti a to matica krat transponovana matica sa musi rovna I druha vlastnos ktora z nej vychadza že det matice = +-1
-//takže matica rotacie musi by ortogonálna 
-char mat_test_rotation(MAT *mat)
+//rotačna matica musi splnať dve vlatnosti a to matica krat transponovana matica sa musi rovnať I druha vlastnosť ktora z nej vychadza že det matice = +-1
+//takže matica rotacie musi byť ortogonálna 
+char mat_test_rotation(MAT *mat, MAT *trans,MAT *kon)
 {
 	
 	int i,j, vysledok =1;
-	float trans[i][j]; //transponovana matica
-	float kon[i][j];
 	float suma =1;
 	
 	if(mat->cols!=mat->rows)
 	{
 	for(i=0;i<mat->rows;i++)
-	{
 		for(j=0;j<mat->cols;j++)
-		{
-			trans[i][j]=ELEM(mat,i,j);
+			ELEM(trans,i,j)=ELEM(mat,i,j);
 			//printf("%f",trans[i][j]);
-		}
 		
-	}
 	for(i=0;i<mat->rows;i++)
 	{
 		for(j=0;j<mat->cols;j++)
 		{
 			for(int x=0;x<mat->cols;x++)
-			{
-				suma+=(trans[i][j]*ELEM(mat,i,j));
-			}
-			kon[i][j]=suma;
+				suma+=ELEM(trans,i,j)*ELEM(mat,i,j);
+			ELEM(kon,i,j)=suma;
 			suma=0;
 		}
 	}
@@ -165,10 +156,10 @@ char mat_test_rotation(MAT *mat)
 	{
 		for(j=0;j<mat->cols;j++)
 		{
-			if(i==j && kon[i][j]!=1 )
-				vysledok =0;
-			if(i!=j && kon[i][j]!=0)
-				vysledok = 0;
+			if(i==j && ELEM(kon,i,j)!=1 )
+			vysledok =0;
+			if(i!=j && ELEM(kon,i,j)!=0)
+			vysledok = 0;
 		}
 	}
 	if(vysledok==1)
@@ -181,26 +172,28 @@ char mat_test_rotation(MAT *mat)
 }
 main()
 {
-	MAT *matica;
+	MAT *matica ,*trans, *kon;
 	float *m;
 	srand(time(0));
 	matica=mat_create_with_type(5,5);
+	trans=mat_create_with_type(5,5);
+	kon=mat_create_with_type(5,5);
     //char odpoved = mat_test_rotation(matica);
     
     
 	mat_random(matica);
 	mat_print(matica);
 	
-	mat_test_rotation(matica);	
-	printf("%i\n",mat_test_rotation(matica));
+	mat_test_rotation(matica,trans,kon);	
+	printf("%i\n",mat_test_rotation(matica,trans,kon));
 	
 	printf("\n");
 	
 	mat_unit(matica);	//jednotkova
 	mat_print(matica);
 	
-    mat_test_rotation(matica);
-	printf("%i\n",mat_test_rotation(matica));
+    mat_test_rotation(matica,trans,kon);
+	printf("%i\n",mat_test_rotation(matica,trans,kon));
 	
 	/*
 	char file[] = {0};
@@ -210,5 +203,9 @@ main()
 	mat_print(matica
 	
 	*/
+	mat_destroy(matica);
+	mat_destroy(trans);
+	mat_destroy(kon);
+	
 
 }
